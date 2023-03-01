@@ -1,0 +1,36 @@
+import requests
+import json
+import datetime
+from twilio.rest import Client
+
+def get_prayer_times():
+    url = 'http://api.aladhan.com/v1/timingsByCity?city=Islamabad&country=Pakistan&method=2'
+    response = requests.get(url)
+    data = json.loads(response.text)
+    prayer_times = data['data']['timings']
+    return prayer_times
+
+    def is_prayer_time(prayer_name, prayer_time):
+      current_time = datetime.datetime.now().strftime('%H:%M')
+      if current_time == prayer_time:
+        return True
+      else:
+        return False
+        
+        def send_whatsapp_message(message):
+          account_sid = 'your_account_sid_here'
+          auth_token = 'your_auth_token_here'
+          client = Client(account_sid, auth_token)
+          from_whatsapp_number = 'whatsapp:+14155238886'
+          to_whatsapp_number = 'whatsapp:+1234567890'
+          client.messages.create(body=message, from_=from_whatsapp_number, to=to_whatsapp_number)
+
+          def main():
+            prayer_times = get_prayer_times()
+            for prayer_name, prayer_time in prayer_times.items():
+              if is_prayer_time(prayer_name, prayer_time):
+                message = f"It's time for {prayer_name} prayer. May Allah accept our prayers."
+                send_whatsapp_message(message)
+
+if __name__ == '__main__':
+  main()
